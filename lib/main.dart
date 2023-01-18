@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -33,13 +31,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var meters = "";
-  var time = "";
+  String meters = "";
+  double reMeters = 0;
+  String time = "";
+  double reTime = 0;
   String? isSelectedMeters = 'm';
   String? isSelectedTime = 'min';
-  var secSpeed;
-  var minSpeed;
-  var hourSpeed;
+  String secSpeed = "   ";
+  String minSpeed = "   ";
+  String hourSpeed = "   ";
 
   @override
   Widget build(BuildContext context) {
@@ -136,30 +136,60 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               TextButton(
                 onPressed: () {
+                  setState(() {
+                    //距離と時間が入力されているなら
+                    if (!(meters == "" || time == "")) {
+                      //距離の変換
+                      switch (isSelectedMeters) {
+                        case "mm":
+                          reMeters = double.parse(meters) / 1000;
+                          break;
+                        case "cm":
+                          reMeters = double.parse(meters) / 100;
+                          break;
+                        case "km":
+                          reMeters = double.parse(meters) * 1000;
+                          break;
+                        default:
+                          reMeters = double.parse(meters);
+                          break;
+                      }
+                      //時間の変換
+                      switch (isSelectedTime) {
+                        case "sec":
+                          reTime = double.parse(time) / 60;
+                          break;
+                        case "h":
+                          reTime = double.parse(time) * 60;
+                          break;
+                        case "day":
+                          reTime = double.parse(time) * 60 * 24;
+                          break;
+                        default:
+                          reTime = double.parse(time);
+                          break;
+                      }
+                      //分速??メートル
+                      double speed = reMeters / reTime;
 
+                      secSpeed = (speed / 60).toString();
+                      minSpeed = (speed).toString();
+                      hourSpeed = (speed * 60 / 1000).toString();
+                    }
+                  });
                 },
-                child: Text(
+                child: const Text(
                   "決定",
                 ),
               ),
-              Text(
-                "秒速"+secSpeed+"m"
-              ),
-              Text(
-                  "分速"+minSpeed+"m"
-              ),
-              Text(
-                  "時速"+hourSpeed+"m"
-              ),
-
+              const Text("\n\n"),
+              Text("秒速 " + secSpeed + "m"),
+              Text("分速 " + minSpeed + "m"),
+              Text("時速 " + hourSpeed + "km"),
             ],
           ),
         ),
       ),
     );
-  }
-
-  double _calculator(){
-    return 8.8;
   }
 }
